@@ -16,8 +16,8 @@ This repo contains the individual yaml files for creating resources on kubernete
 - Create a service account for this namespace
   - kubectl apply -f deployment-infra/sa/*
 - If using minikube, then docker build should be preceded by running following command to export minikube env variables, `eval $(minikube docker-env)`. For more info refer [here](https://stackoverflow.com/questions/52310599/what-does-minikube-docker-env-mean)
-  - `docker build -t kube-test-frontend .` -> for frotend 
-  - `docker build -t kube-test-backend .` -> for frotend 
+  - `docker build -t kube-test-frontend .` -> for frontend 
+  - `docker build -t kube-test-backend .` -> for backend 
 ### Manually
 - Frontend
     - kubectl apply -f deployment-infra/frontend/* files
