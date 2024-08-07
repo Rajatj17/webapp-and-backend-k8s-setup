@@ -23,7 +23,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: "sa"
+  name: ""
 
 podAnnotations: {}
 podLabels:
@@ -54,7 +54,7 @@ ingress:
   hosts:
     - host: kube-test
       paths:
-        - path: /api(/|$)(.*)
+        - path: /api/v1/(/|$)(.*)
           pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls
