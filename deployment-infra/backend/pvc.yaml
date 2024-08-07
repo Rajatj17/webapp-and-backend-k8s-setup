@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: helm-test
+  name: backend-volume-claim
+  labels:
+    name: pv-vol
+spec:
+  accessModes:
+    - ReadWriteOnce
+  # storageClassName: aws or gcp - Dynamic provisioning
+  resources:
+    requests:
+      storage: '200Mi'

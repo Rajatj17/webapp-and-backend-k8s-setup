@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+  namespace: kube-test
+  labels:
+    app: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      serviceAccountName: sa
+      containers:
+        - name: server
+          image: kube-test-backend:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - mountPath: /data
+              name: backend-data
+          resources:
+            limits:
+              cpu: 1
+              memory: "2Gi"
+            requests:
+              cpu: 0.5
+              memory: '1Gi'
+      volumes:
+        - name: backend-data
+          persistentVolumeClaim:
+            claimName: backend-volume-claim

@@ -1,0 +1,21 @@
+<html>
+    <script>
+        const button = document.getElementById('unique-id');
+
+        function callAPI() {
+            fetch('http://kube-test/backend')
+                .then(function (result) {
+                    console.log(result);
+                })
+                .catch(function (err) {
+                    console.error(err);
+                });
+        };
+    </script>
+    <h1>
+        Hi! Welcome to Kube-Test Frontend Application
+    </h1>
+    <button onclick="callAPI()">
+        Click the button to fire API call
+    </button>
+</html>

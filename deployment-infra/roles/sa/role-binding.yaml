@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kube-test-role-binding
+  namespace: kube-test
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kube-test-role 
+subjects:
+- kind: ServiceAccount
+  name: sa
+  namespace: kube-test
