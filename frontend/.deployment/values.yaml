@@ -5,13 +5,13 @@
 replicaCount: 1
 
 image:
-  repository: kube-test-backend
+  repository: kube-test-frontend
   pullPolicy: Never
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
 imagePullSecrets: []
-nameOverride: kube-test-backend
+nameOverride: kube-test-frontend
 fullnameOverride: ""
 
 serviceAccount:
@@ -27,7 +27,7 @@ serviceAccount:
 
 podAnnotations: {}
 podLabels:
-  app: backend
+  app: frontend
 
 podSecurityContext: {}
   # fsGroup: 2000
@@ -42,7 +42,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 5000
+  port: 3000
 
 ingress:
   enabled: true
@@ -54,7 +54,7 @@ ingress:
   hosts:
     - host: kube-test
       paths:
-        - path: /api(/|$)(.*)
+        - path: /web(/|$)(.*)
           pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls
@@ -90,15 +90,10 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 # Additional volumes on the output Deployment definition.
-volumes:
-  - name: vol1
-    persistentVolumeClaim:
-      claimName: backend-volume-claim
+volumes: []
 
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts:
-- name: vol1
-  mountPath: "/data"
+volumeMounts: []
 
 nodeSelector: {}
 
