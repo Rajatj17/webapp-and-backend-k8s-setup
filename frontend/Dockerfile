@@ -2,7 +2,7 @@ FROM node:22-bullseye-slim
 
 WORKDIR /frontend
 
-COPY . .
+COPY index.html .
 
 RUN npm install -g serve
 

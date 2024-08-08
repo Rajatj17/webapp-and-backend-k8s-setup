@@ -54,7 +54,7 @@ ingress:
   hosts:
     - host: kube-test
       paths:
-        - path: /api/v1/(/|$)(.*)
+        - path: /backend(/|$)(.*)
           pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls

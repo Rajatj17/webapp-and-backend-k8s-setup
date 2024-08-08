@@ -132,8 +132,7 @@ image.repository
   - Types
     - nodeAffinity: Match label between Pod and Node
     - podAffinity: Match label between Pod and existing Pods running on a Node
-    - podAntAffinity: Same as podAffinity but does the inverse, tries to put matching label pods on different Node
-
+    - podAntiAffinity: Same as podAffinity but does the inverse, tries to put matching label pods on different Node
 ```yaml
 # ReplicaCount is used to specify the number of replicas needed for a particular pod
 replicaCount: 1
