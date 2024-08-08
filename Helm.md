@@ -81,16 +81,16 @@ image.repository
   - This is same as ingress.hosts field (Will confirm)
 - resources.limits.cpu
   - Max cpu allocation for this container
-  - 100m means 100milli CPU equivalent to 1 cpu
+  - 100m is equivalent to 0.1 cpu (m stands for thounsandth of core i.e. 100/1000 = 0.1 = 10% cpu)
 - resources.limits.memory
   - Max memory allocation for this container
-  - 128Mi means 128MebiByte memory
+  - 128Mi means 128 MebiByte memory
 - resources.requests.cpu
   - Mininum cpu allocation for this container
-  - 100m means 100milli CPU equivalent to 1 cpu
+  - 100m is equivalent to 0.1 cpu (m stands for thounsandth of core i.e. 100/1000 = 0.1 = 10% cpu)
 - resources.requests.memory
   - Mininum memory allocation for this container
-  - 128Mi means 128MebiByte memory
+  - 128Mi means 128 MebiByte memory
 - livenessProbe.httpGet
   - It specified the path & port to be used for checking liveness of the pod
 - readinessProbe.httpGet
