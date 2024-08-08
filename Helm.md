@@ -43,7 +43,8 @@ image.repository
   - if name is set, and it exists, it attaches that service account
   - If not set and create is true, a name is generated using the fullname template
 - podAnnotations
-  - annotations used by used
+  - annotations are metadata key/value pair, similar to labels, but annotations are not used for matching and identifying the resources.
+  - annotations can be release build, timestamp - only for information purpose or it can be imageRegistry url which can be used by the k8s to call correct host for fetching the image
 - podLabels
   - add labels to your pod, which are key/value pair
   - labels is metadata
