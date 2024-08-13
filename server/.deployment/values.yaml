@@ -89,6 +89,10 @@ autoscaling:
   targetCPUUtilizationPercentage: 5
   # targetMemoryUtilizationPercentage: 80
 
+# PVC 
+pvc:
+  claimName: backend-volume-claim # For now, Keep it same as volumes[0].persistentVoumeClaim. Will add the usage od only volumes prop for pvc.yaml as well
+
 # Additional volumes on the output Deployment definition.
 volumes:
   - name: vol1

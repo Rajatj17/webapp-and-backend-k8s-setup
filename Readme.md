@@ -14,10 +14,18 @@ This repo contains the individual yaml files for creating resources on kubernete
   - Or
   - `kubectl create namespace kube-test`
 - Create a service account for this namespace
-  - kubectl apply -f deployment-infra/namespace-sa/*
+  - kubectl apply -f deployment-infra/roles/namespace-sa/*
+  - After serviceAccount has been created
+    - add a context of `kube-test` namespace with user authetication by token in the kube config
+    - After setting context you can use this command to directly replace the token in kube config file directly
+      - `sed -i "/^ *token:/s/: .*/: $(kubectl create token kube-test-sa -n users)/" ~/.kube/config`
+    - You can switch to different context by installing `kubectx $CONTEXT_NAME` or `kubectl config use-context $CONTEXT_NAME`
 - If using minikube, then docker build should be preceded by running following command to export minikube env variables, `eval $(minikube docker-env)`. For more info refer [here](https://stackoverflow.com/questions/52310599/what-does-minikube-docker-env-mean)
   - `docker build -t kube-test-frontend .` -> for frontend 
   - `docker build -t kube-test-backend .` -> for backend 
+
+> Note: Use the `kube-test` context from here onwards since we want to do deployment using service account only
+
 ### Manually
 - Frontend
   - kubectl apply -f deployment-infra/frontend/* files
@@ -35,8 +43,8 @@ This repo contains the individual yaml files for creating resources on kubernete
 
 ### Using Helm Charts
 You can go and configure your helmchart values based on your preference. A guide explaining all the fields being used at the moment is avaialble at [HELM VALUE GUIDE](Helm.md)
-- Create PVC and Volume manually (Will see and add  the support automatic creation with the help of helm chart)
-  - kubectl apply -f deployment-infra/backend/pvc.yaml
+- Create Volume manually (The SA don't have previlege to allocate volume. This emulates best security practices.)
+  - kubectl apply -f deployment-infra/backend/persistent-volume.yaml
 - Frontend
   - helm upgrade --install kube-test-frontend .deployment -n kube-test
 - Backend

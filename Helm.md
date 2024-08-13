@@ -12,128 +12,142 @@ is getting represented as
 image.repository
 ```
 
-- ReplicaCount
+- `ReplicaCount`
   - It is used to specify the number of replicas needed for a particular pod. 
   - This value is used in the replica key present in the Deployment and Pod yaml file
-- image.repository
+- `image.repository`
   - Your container/docker image
-- image.pullPolicy
+-` image.pullPolicy`
   - Weather to fetch the image from registry or not and by which approach
   - Options available
     - IfNotPresent: Pull only if not already present locally
     - Always: Pull from container registery, every time the container is launched
     - Never: Use locally available image if present, otherwise fail
-- image.tag
+- `image.tag`
   - Tag of the image
-- imagePullSecrets:
+- `imagePullSecrets`
   - Secret file name containing the credentials to be used for authenticating & auhorization during pull image call to private registry
   - Secret must be in the same namespace
   - There is alternative way, where we can attach the secret to serviceAccount and we won't need to specify this field in this file since it will be automatically loaded by the serviceAccount usage. For more info [refer](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account)
-- nameOverride
+- `nameOverride`
   - You can override the name of this deployment which is by default the same as mentioned in the Chart.yaml name field
-- fullnameOverride
+- `fullnameOverride`
   - Helm attaches a release tag to you provided name and calls it fullname, you can override that too.
-- seviceAccount.create
+- `seviceAccount.create`
   - Whether to create a service account automatically
-- serviceAccount.automount
+- `serviceAccount.automount`
   - Whether to mount the api credentials of the service account automatically inside the pod
-- serviceAccount.annotations
+- `serviceAccount.annotations`
   - Annotations
-- serviceAccount.name: 
+- `serviceAccount.name`
   - if name is set, and it exists, it attaches that service account
   - If not set and create is true, a name is generated using the fullname template
-- podAnnotations
+- `podAnnotations`
   - annotations are metadata key/value pair, similar to labels, but annotations are not used for matching and identifying the resources.
   - annotations can be release build, timestamp - only for information purpose or it can be imageRegistry url which can be used by the k8s to call correct host for fetching the image
-- podLabels
+- `podLabels`
   - add labels to your pod, which are key/value pair
   - labels is metadata
   - They can be used to attach multiple resources to each other using `matchSelector` tags
-- service.type
+- `service.type`
   - Services provides networking capabilities to the pod
   - Type of service to be created
     - ClusterIP: Exposed on cluster-internal IP, making it reachable only within the cluster. Default option
     - NodePort: Expose pod on Node's IP with the static port mentioned here.
     - LoadBalancer: Expose the service using external load balancer. Can be integrated with cloud provider options
     - ExternalName: Will add details
-- service.port
+- `service.port`
   - Port used by the service
   - Helm chart default configugration makes the service.port and service.targetPort parameter same. It makes things consistent, you can alter your helm chart as per your need though
-- ingress.enabled
+- `ingress.enabled`
   - Enable inress or not (true/false)
-- ingress.className
+- `ingress.className`
   - Specify name of ingress control being used, it can be aws lb, nginx etc.
-- ingress.annotations
+- `ingress.annotations`
   - annotations to configure your load balancer properties
-- ingress.hosts.host (Array)
+- `ingress.hosts.host` (Array)
   - domain name to be used by your load balancer
-- ingress.hosts.paths.path
+- `ingress.hosts.paths.path`
   - Load balancing based on path parameter
-- ngress.hosts.paths.pathType
+- `ingress.hosts.paths.pathType`
   - Type of path based redirecting.
   - It can be
     - Exact
     - Prefix
     - ImplementationSpecifc
-- ingress.tls.secretName
+- `ingress.tls.secretName`
   - Secret name which contains the tls credentials like cert and private key
-- ingress.tls.hosts
+- `ingress.tls.hosts`
   - This is same as ingress.hosts field (Will confirm)
-- resources.limits.cpu
+- `resources.limits.cpu`
   - Max cpu allocation for this container
   - 100m is equivalent to 0.1 cpu (m stands for thounsandth of core i.e. 100/1000 = 0.1 = 10% cpu)
-- resources.limits.memory
+- `resources.limits.memory`
   - Max memory allocation for this container
   - 128Mi means 128 MebiByte memory
-- resources.requests.cpu
+- `resources.requests.cpu`
   - Mininum cpu allocation for this container
   - 100m is equivalent to 0.1 cpu (m stands for thounsandth of core i.e. 100/1000 = 0.1 = 10% cpu)
-- resources.requests.memory
+- `resources.requests.memory`
   - Mininum memory allocation for this container
   - 128Mi means 128 MebiByte memory
-- livenessProbe.httpGet
+- `livenessProbe.httpGet`
   - It specified the path & port to be used for checking liveness of the pod
-- readinessProbe.httpGet
+- `readinessProbe.httpGet`
   - it is used initial to measure if pod is ready to accept connection, measuring readiness of the pod
-- autoscaling.enabled
+- `autoscaling.enabled`
   - Enable HPA Or Not (true/false)
-- autoscaling.minReplicas
+- `autoscaling.minReplicas`
   - minimum number of replicas a pod should have
-- autoscaling.minReplicas
+- `autoscaling.minReplicas`
   - maximum number of replicas a pod can have
-- autoscaling.targetCPUUtilizationPercentage
+- `autoscaling.targetCPUUtilizationPercentage`
   - Percentage of CPU usage after which autoscaling(new replicas) should happen
-- autoscaling.targetMemoryUtilizationPercentage
+- `autoscaling.targetMemoryUtilizationPercentage`
   - Percentage of Memory usage after which autoscaling(new replicas) should happen
-- volumes.name
+- `volumes.name`
   - Name of volume to be attached
-- volume.persistentVolumeClaim.claimName
-  - PVC name to be used to accessing the volume based on those criteria. PVC & Volume creation should be done before running helm install command (Will see if I can add it to the charts folder)
-- volumeMounts.name
+- `volume.persistentVolumeClaim.claimName`
+  - PVC name to be used to accessing the volume based on those criteria
   - Name of volume mount
-- volumeMounts.mountPath
+- `volumeMounts.mountPath`
   - Pod location at which the volume should be mounted
-- nodeSelector
+- `nodeSelector`
   - Specify the matching label corresponding to the Node's label on which you want to run this pod specifically
-  - By specifying the label key=value like `custom-label=custom-value` on Node and in this field here, we can forced the kube-scheduler to schedule this pod on a particular node
-- tolerations
-  - Toleration goes hand in hand with taints.
-  - We can attacha  taint on a node with a certain property. E.g. `kubectl taint nodes node1 key1=value1:NoSchedule-`
-  - Now no pod will be able to schedule onto node1 unless it has a matching toleration. E.g.
-    ```yaml
-      tolerations:
-      key: "key1"
-      operator: "Equal"
-      value: "value1"
-      effect: "NoSchedule"
-    ```
-  - Tolerations allow scheduling but don't guarantee scheduling
-- affinity
+  - By specifying the label key=value like `custom-label=custom-value` on Node and in this field here, we can force the kube-scheduler to schedule this pod on a particular node
+  - No support for logical operators, only exact match allowed.
+  - The pod won't start unless it match the corresponding label on any Node.
+- `affinity`
   - More expressive type of nodeSelector, with more constraints
+  - Syntax
+    ```yaml
+    nodeSelectorTerms:
+      - matchExpressions:
+        - key: size
+          operator: NotIn
+          value:
+            - Small
+            - Medium
+    ```
   - Types
     - nodeAffinity: Match label between Pod and Node
     - podAffinity: Match label between Pod and existing Pods running on a Node
     - podAntiAffinity: Same as podAffinity but does the inverse, tries to put matching label pods on different Node
+  - Does not guantee that other pods won't be placed on the same node.
+  - The pod won't start unless it match the corresponding label on any Node.
+- `tolerations`
+  - Toleration goes hand in hand with taints.
+  - We can attach a taint on a node with a certain property. E.g. `kubectl taint nodes node1 key1=value1:NoSchedule-`
+  - Now no pod will be able to schedule onto node1 unless it has a matching toleration. E.g.
+    ```yaml
+    tolerations:
+      key: "key1"
+      operator: "Equal"
+      value: "value1"
+      effect: "NoSchedule" Or "PerferNoSchedule" Or "NoExecute"
+    ```
+  - > Note: Tolerations allow scheduling but don't guarantee scheduling(it is posssible that a pod may get deployed on a different Node based on scheduler) and is the reason of difference from affinities
+
 ```yaml
 # ReplicaCount is used to specify the number of replicas needed for a particular pod
 replicaCount: 1
