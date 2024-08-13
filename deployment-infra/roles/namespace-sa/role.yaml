@@ -4,5 +4,8 @@ metadata:
   name: ns-scoped-clusterrole
 rules:
 - apiGroups: [""]
-  resources: [""]
+  resources: ["*"] # NOTE: this regex is not working, not even empty semi colons, so figure out the better way to give `cluster-admin` permission
   verbs: ["*"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"] # persistentVolumeclaims is not a namespaced based resource, so had to give the access separately.
+  verbs: ["create", "get", "list"]
