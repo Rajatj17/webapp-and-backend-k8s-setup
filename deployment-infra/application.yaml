@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8s-exerise.com
+spec:
+  destination:
+    name: ''
+    namespace: cicd-check
+    server: https://kubernetes.default.svc
+  source:
+    path: server/.deployment
+    repoURL: https://github.com/Rajatj17/webapp-and-backend-k8s-setup
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+  sources: []
+  project: default
