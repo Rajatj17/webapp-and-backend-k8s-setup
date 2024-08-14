@@ -119,7 +119,7 @@ pipeline {
     }
 
     parameters {
-        string (name: 'GIT_BRANCH',           defaultValue: 'master',  description: 'Git branch to build')
+        string (name: 'GIT_BRANCH',           defaultValue: 'fixes/jenkins-working',  description: 'Git branch to build')
         booleanParam (name: 'DEPLOY_TO_PROD', defaultValue: false,     description: 'If build and tests are good, proceed and deploy to production without manual approval')
 
 
@@ -139,7 +139,7 @@ pipeline {
     }
 
     // In this example, all is built and run from the master
-    agent { node { label 'master' } }
+    agent any
 
     // Pipeline stages
     stages {
@@ -148,7 +148,7 @@ pipeline {
         stage('Git clone and setup') {
             steps {
                 echo "Check out acme code"
-                git branch: "master",
+                git branch: GIT_BRANCH,
                         credentialsId: 'github-credentials',
                         url: 'https://github.com/Rajatj17/webapp-and-backend-k8s-setup.git'
 
