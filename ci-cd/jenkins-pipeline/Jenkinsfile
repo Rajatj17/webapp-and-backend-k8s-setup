@@ -1,63 +1,103 @@
-pipeline {
-    agent any
 
-    environment {
-        ENV = """${sh(
-            returnStdout: true,
-            script: echo "dev"
-        )}"""
-        
-        NAMESPACE = 'devops-tools'
+podTemplate(label: 'mypod', serviceAccount: 'jenkins-ci', containers: [ 
+    containerTemplate(
+      name: 'docker', 
+      image: 'docker', 
+      command: 'cat', 
+      resourceRequestCpu: '100m',
+      resourceLimitCpu: '300m',
+      resourceRequestMemory: '300Mi',
+      resourceLimitMemory: '500Mi',
+      ttyEnabled: true
+    ),
+    containerTemplate(
+      name: 'kubectl', 
+      image: 'amaceog/kubectl',
+      resourceRequestCpu: '100m',
+      resourceLimitCpu: '300m',
+      resourceRequestMemory: '300Mi',
+      resourceLimitMemory: '500Mi', 
+      ttyEnabled: true, 
+      command: 'cat'
+    ),
+    containerTemplate(
+      name: 'helm', 
+      image: 'alpine/helm:2.14.0', 
+      resourceRequestCpu: '100m',
+      resourceLimitCpu: '300m',
+      resourceRequestMemory: '300Mi',
+      resourceLimitMemory: '500Mi',
+      ttyEnabled: true, 
+      command: 'cat'
+    )
+  ],
 
-        // Type: SecretText
-        SECRET_TEXT = credentials('secret-id')
+  volumes: [
+    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
+    hostPathVolume(mountPath: '/usr/local/bin/helm', hostPath: '/usr/local/bin/helm')
+  ]
+  ) {
+    node('mypod') {
 
-        // Type: Username/Password
-        // DOCKER_CREDS - contains a username and a password separated by a colon in the format username:password.
-        // DOCKER_CREDS_USR - an additional variable containing the username component only.
-        // DOCKER_CREDS_PSW - an additional variable containing the password component only.
-        DOCKER_CREDS = credentials('docker-creentials')
+        def REPOSITORY_URI = "gbxnga/nodejs-k8s-cicd"
+        def HELM_APP_NAME = "nodejs-app"
+        def HELM_CHART_DIRECTORY = "k8s/nodejs-k8s-cicd"
 
-        // Type: File
-        // The MY_KUBECONFIG environment variable will be assigned
-        // the value of a temporary file.  For example:
-        //   /home/user/.jenkins/workspace/cred_test@tmp/secretFiles/546a5cf3-9b56-4165-a0fd-19e2afe6b31f/kubeconfig.txt
-        MY_KUBECONFIG = credentials('my-kubeconfig')
-    }
+        stage('Get latest version of code') {
+          checkout scm
+        }
+        stage('Check running containers') {
+            container('docker') {  
+                sh 'hostname'
+                sh 'hostname -i' 
+                sh 'docker ps'
+                sh 'ls'
+            }
+            container('kubectl') { 
+                sh 'kubectl get pods -n default'  
+            }
+            container('helm') { 
+                sh 'helm init --client-only --skip-refresh'
+                sh 'helm repo update'     
+            }
+        }  
 
-    parameters {
-        string(name: 'ENVIRONMENT', defaultValue: 'DEV', description: 'Which environment to deploy this pod in')
-    }
+        stage('Build Image'){
+            container('docker'){
 
-    stages {
-        stage('Checkout') {
-            echo 'Started the build'
+              withCredentials([usernamePassword(credentialsId: 'docker-login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'docker login --username="${USERNAME}" --password="${PASSWORD}"'
+                sh "docker build -t ${REPOSITORY_URI}:${BUILD_NUMBER} ."
+                sh 'docker image ls' 
+              } 
+                
+            }
+        } 
+
+        stage('Testing') {
+            container('docker') { 
+              sh 'whoami'
+              sh 'hostname -i' 
+              sh "docker run ${REPOSITORY_URI}:${BUILD_NUMBER} npm run test "                 
+            }
         }
 
-        stage('Build Image') {
-            echo 'Build stage'
+        stage('Push Image'){
+            container('docker'){
+              withCredentials([usernamePassword(credentialsId: 'docker-login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'docker image ls'
+                sh "docker push ${REPOSITORY_URI}:${BUILD_NUMBER}"
+              }                 
+            }
         }
 
-        stage ('Push Image') {
-            echo 'Push stage'
-        }
-
-        stage ('Update image tag in Helm') {
-            echo 'Update image tag stage'
-        }
-
-        stage ('Deploy using Helm') {
-            echo 'Deploy stage'
-        }
-    }
-
-    post {
-        always {
-            echo 'Running tests'
-        }
-
-        failure {
-            echo 'Pipeline run failed'
-        }
+        stage('Deploy Image to k8s'){
+            container('helm'){
+                sh 'helm list'
+                sh "helm lint ./${HELM_CHART_DIRECTORY}"
+                sh "helm upgrade --wait --timeout 60 --set image.tag=${BUILD_NUMBER} ${HELM_APP_NAME} ./${HELM_CHART_DIRECTORY}"
+                sh "helm list | grep ${HELM_APP_NAME}"
+            }
+        }      
     }
 }
